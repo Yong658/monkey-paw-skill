@@ -117,7 +117,7 @@ Rules for the contract:
 - Verdict: no open gaps → Paw defeated; minor gaps → Draw; a gap that would ruin the product → Paw wins.
 - Close with one line pointing out this contract is now a decent requirements spec they could hand to an AI or a developer.
 
-If the stage is running, finish with a short "what you got" note: the page path (`.../index.html`), that it now shows the full wish log and the stamped contract, and that its save button (**결과 HTML 저장** / **Save as HTML**) makes a single file they can share.
+If the stage is running, finish with a short "what you got" note: the page path (`.../index.html`), that it now shows the full wish log and the sealed contract, and that its save button (**HTML로 저장** / **Save as HTML**) makes a single file they can share.
 
 If the user adds more conditions after the contract, no fingers are left: just reissue the contract with the new conditions and an updated verdict.
 

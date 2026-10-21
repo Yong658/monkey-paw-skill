@@ -2,172 +2,191 @@
 // then re-reads state.js (next to index.html) every 1.5 s and redraws when the revision goes up.
 (function () {
   document.title = "Monkey's Paw";
-  document.head.insertAdjacentHTML("beforeend", '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap">' + "<style>" + `
+  document.head.insertAdjacentHTML("beforeend",
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">' +
+    "<style>" + `
 :root {
-  --bg: #120c0a;
-  --bg-2: #1c1310;
-  --panel: #221815;
-  --line: #3a2a23;
-  --ink: #efe3d3;
-  --muted: #a8968a;
-  --fur: #6e4b33;
-  --fur-dark: #3b281c;
-  --nail: #d9c7a8;
-  --ember: #e0893a;
-  --blood: #b8352b;
-  --paper: #efe0bf;
-  --paper-ink: #3a2a1a;
-  --serif: "Gowun Batang", "Batang", "Georgia", serif;
-  --mono: "IBM Plex Mono", "Consolas", monospace;
+  --baize: #1f3a30;
+  --baize-deep: #152a22;
+  --brass: #b8955a;
+  --bone: #e8dfca;
+  --manila: #d9c79a;
+  --oxblood: #7d1f24;
+  --ink: #2a221a;
+  --fur: #5e4631;
+  --fur-light: #7a5d42;
+  --claw: #d6c8a6;
+  --display: "Song Myung", "Batang", serif;
+  --body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  background: radial-gradient(1200px 600px at 20% -10%, #3a1d14 0%, transparent 60%), var(--bg);
-  color: var(--ink);
-  font-family: var(--serif);
-  line-height: 1.6;
+  background-color: var(--baize);
+  background-image: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.06), transparent 60%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,.45), transparent 60%);
+  color: var(--bone);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.7;
   min-height: 100vh;
 }
-.wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.brand { font-size: 22px; font-weight: 700; letter-spacing: .02em; }
-.brand small { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
-.pill { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
-.pill.live::before { content: "● "; color: var(--ember); }
-.pill.off::before { content: "● "; color: var(--blood); }
+.wrap { max-width: 920px; margin: 0 auto; padding: 28px 16px 72px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { font-family: var(--display); font-size: 26px; color: var(--brass); }
+.status { font-size: 13px; color: rgba(232,223,202,.65); }
+.status.off { color: #f0a8a0; }
 
-.hero { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: center; margin-top: 28px; }
-@media (max-width: 640px) { .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
-.paw svg { width: 200px; height: auto; filter: drop-shadow(0 12px 30px rgba(224,137,58,.18)); }
-.finger rect { transition: transform .9s cubic-bezier(.6,-0.3,.3,1.4), fill .9s; transform-box: fill-box; transform-origin: 50% 100%; fill: var(--fur); }
-.finger .nail { transition: transform .9s cubic-bezier(.6,-0.3,.3,1.4), opacity .6s; transform-box: view-box; fill: var(--nail); }
-.finger.curled rect { transform: scaleY(.3); fill: var(--fur-dark); }
-.finger.curled .nail { opacity: 0; }
-.paw.shake svg { animation: shake .6s; }
-@keyframes shake { 20%{transform:rotate(-4deg)} 40%{transform:rotate(3deg)} 60%{transform:rotate(-2deg)} 80%{transform:rotate(1deg)} }
+.cabinet { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 8px 36px; align-items: start; margin-top: 20px; }
+@media (max-width: 680px) { .cabinet { grid-template-columns: 1fr; } }
+.paw { position: relative; }
+.paw svg { width: 100%; max-width: 300px; display: block; margin: 0 auto; overflow: visible; }
+.seg { transition: transform 1.1s cubic-bezier(.5,-0.4,.3,1.3); transform-box: view-box; }
+.paw.still .seg { transition: none; }
+.paw.twitch svg { animation: twitch .7s; }
+@keyframes twitch { 25% { transform: rotate(-3deg); } 55% { transform: rotate(2deg); } 80% { transform: rotate(-1deg); } }
 
-.label { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
-.wish { font-size: clamp(22px, 4vw, 34px); font-weight: 700; margin: 6px 0 12px; word-break: keep-all; }
-.wish.empty { color: var(--muted); font-weight: 400; }
-.dots { font-size: 22px; letter-spacing: 6px; color: var(--ember); }
-.hint { margin-top: 10px; color: var(--muted); font-size: 15px; }
-.hint b { color: var(--ink); }
+.tag { position: relative; background: var(--manila); color: var(--ink); padding: 26px 26px 22px 34px; margin-top: 34px;
+  clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 50%); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+.tag::before { content: ""; position: absolute; left: 12px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%;
+  background: var(--baize); box-shadow: inset 0 0 0 2px var(--brass); }
+.tag .wish { font-family: var(--display); font-size: clamp(24px, 3.6vw, 34px); line-height: 1.35; margin: 0; word-break: keep-all; }
+.tag .wish.empty { color: rgba(42,34,26,.55); }
+.tag .left { margin-top: 14px; font-size: 15px; }
+.tag .left b { font-weight: 600; }
+.next { margin-top: 16px; font-size: 15px; color: rgba(232,223,202,.8); }
+.next b { color: var(--bone); font-weight: 600; }
+.conds { margin: 18px 0 0; padding: 0; list-style: none; }
+.conds li { position: relative; padding-left: 20px; margin: 4px 0; }
+.conds li::before { content: ""; position: absolute; left: 2px; top: .7em; width: 8px; height: 8px; border-radius: 50%; background: var(--brass); }
 
-section { margin-top: 36px; }
-h2 { font-size: 15px; font-family: var(--mono); color: var(--muted); font-weight: 400; letter-spacing: .04em; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 15px; }
-.chip i { font-style: normal; font-family: var(--mono); color: var(--ember); margin-right: 6px; }
-.none { color: var(--muted); font-size: 15px; }
+h2 { font-family: var(--display); font-weight: 400; font-size: 24px; color: var(--brass); margin: 56px 0 8px; }
+.ledger { list-style: none; margin: 0; padding: 0; }
+.entry { display: grid; grid-template-columns: 112px 1fr; gap: 20px; padding: 22px 0; border-top: 1px solid rgba(184,149,90,.35); }
+@media (max-width: 560px) { .entry { grid-template-columns: 1fr; gap: 6px; } }
+.entry .ord { font-family: var(--display); font-size: 19px; color: var(--brass); line-height: 1.4; }
+.entry .said { font-family: var(--display); font-size: 21px; line-height: 1.5; margin: 0 0 10px; max-width: 34em; }
+.entry .said::before { content: "\\201C"; } .entry .said::after { content: "\\201D"; }
+.entry .granted { margin: 0; max-width: 40em; }
+.entry .gap { margin: 10px 0 0; max-width: 40em; color: rgba(232,223,202,.8); font-size: 15px; }
+.entry .gap span { color: #e9a39b; font-weight: 600; margin-right: 6px; }
+.entry .gap em { font-style: normal; color: var(--bone); text-decoration: underline wavy #d0453c; text-decoration-thickness: 1.5px; text-underline-offset: 5px; }
+.entry .quiet { margin: 0; color: rgba(232,223,202,.75); }
+.entry.new { animation: ink 1.2s .6s both; }
+@keyframes ink { from { opacity: 0; } }
 
-.rounds { display: grid; gap: 16px; }
-.round { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; position: relative; }
-.round.fresh { animation: rise .7s ease-out; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
-.round .no { position: absolute; top: 14px; right: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.round .ask { color: var(--muted); font-size: 15px; padding-right: 60px; }
-.round .ask::before { content: "🙏 "; }
-.round .granted { font-size: 18px; margin: 10px 0; }
-.round .loop { border-left: 3px solid var(--blood); padding: 4px 0 4px 12px; color: #f0c2b8; font-size: 15px; }
-mark { background: rgba(184,53,43,.35); color: #fff; padding: 0 3px; border-radius: 3px; }
-.final { margin-top: 10px; color: var(--paper); font-size: 15px; }
-.defeat { text-align: center; font-size: 20px; padding: 18px; color: var(--ember); }
+.deed { position: relative; background: var(--bone); color: var(--ink); padding: 40px 36px 32px; margin-top: 12px;
+  background-image: linear-gradient(rgba(125,31,36,.05) 1px, transparent 1px); background-size: 100% 2.2em;
+  box-shadow: 0 18px 40px rgba(0,0,0,.4); border-left: 6px double rgba(125,31,36,.35); }
+@media (max-width: 560px) { .deed { padding: 28px 20px; } }
+.deed h3 { font-family: var(--display); font-weight: 400; font-size: 32px; margin: 0 0 4px; }
+.deed .sub { font-size: 14px; color: rgba(42,34,26,.7); margin: 0 0 22px; max-width: 26em; }
+.deed .wish { font-family: var(--display); font-size: 22px; line-height: 1.5; margin: 0 0 20px; max-width: 30em; }
+.deed h4 { font-size: 14px; font-weight: 600; margin: 20px 0 4px; color: var(--oxblood); }
+.deed ol, .deed ul { margin: 0; padding-left: 22px; max-width: 40em; }
+.deed .none { margin: 0; color: rgba(42,34,26,.6); }
+.deed .note { margin: 26px 0 0; padding-top: 14px; border-top: 1px solid rgba(42,34,26,.25); font-size: 15px; max-width: 40em; }
+.seal { position: absolute; top: 26px; right: 28px; width: 112px; height: 112px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #a7383c, var(--oxblood) 55%, #571317);
+  box-shadow: 0 4px 10px rgba(0,0,0,.35), inset 0 0 0 7px rgba(0,0,0,.12), inset 0 0 0 9px rgba(255,255,255,.08);
+  display: grid; place-items: center; text-align: center; color: #f3d9cf; font-family: var(--display); font-size: 17px; line-height: 1.2; padding: 14px;
+  transform: rotate(-9deg); }
+.deed.new .seal { animation: press .55s 1s both cubic-bezier(.2,1.5,.4,1); }
+@keyframes press { from { transform: rotate(-9deg) scale(1.9); opacity: 0; } }
+@media (max-width: 560px) { .seal { position: static; margin: 0 0 18px auto; width: 92px; height: 92px; font-size: 15px; } }
+.deed.has-seal h3, .deed.has-seal .sub { padding-right: 130px; }
+@media (max-width: 560px) { .deed.has-seal h3, .deed.has-seal .sub { padding-right: 0; } }
 
-.contract { background: var(--paper); color: var(--paper-ink); border-radius: 6px; padding: 32px 28px 28px; position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 0 80px rgba(120,80,30,.25); }
-.contract.fresh { animation: unroll .9s ease-out; }
-@keyframes unroll { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
-.contract h3 { margin: 0 0 4px; font-size: 26px; text-align: center; }
-.contract .sub { text-align: center; font-size: 13px; opacity: .7; margin-bottom: 20px; }
-.contract .row { margin: 14px 0; }
-.contract .row b { display: block; font-size: 13px; opacity: .7; }
-.contract ol, .contract ul { margin: 4px 0 0; padding-left: 22px; }
-.stamp { position: absolute; top: 22px; right: 22px; transform: rotate(-12deg); border: 4px double var(--blood); color: var(--blood);
-  padding: 6px 12px; font-weight: 700; font-size: 18px; border-radius: 6px; opacity: .85; background: rgba(239,224,191,.6); }
-.contract.fresh .stamp { animation: stamp .5s .9s both cubic-bezier(.2,1.6,.4,1); }
-@keyframes stamp { from { transform: rotate(-12deg) scale(2.4); opacity: 0; } }
-@media (max-width: 640px) { .stamp { position: static; display: inline-block; margin-bottom: 12px; } }
-.note { margin-top: 18px; font-size: 14px; border-top: 1px dashed rgba(58,42,26,.4); padding-top: 12px; }
-.actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-button { font-family: var(--serif); font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
-button:hover { border-color: var(--ember); }
-footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: center; }
+.actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+button { font-family: var(--body); font-size: 15px; padding: 9px 18px; border: 1px solid var(--brass); background: transparent; color: var(--bone); cursor: pointer; border-radius: 2px; }
+button:hover { background: rgba(184,149,90,.15); }
+button:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+footer { margin-top: 56px; font-size: 13px; color: rgba(232,223,202,.55); }
 [hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 ` + "</style>");
+
+  // 손가락은 마디 두 개로 그린다. 접히면 첫 마디가 짧아지고 끝 마디가 아래로 뒤집혀 손바닥 쪽으로 접힌다.
+  function finger(i, x, base, l1, l2) {
+    var j = base - l1, tip = j - l2;
+    return '<g class="finger" data-i="' + i + '">' +
+      '<g class="seg p" style="transform-origin:' + x + 'px ' + base + 'px">' +
+        '<line x1="' + x + '" y1="' + base + '" x2="' + x + '" y2="' + j + '" stroke="var(--fur)" stroke-width="25" stroke-linecap="round"/>' +
+        '<line x1="' + (x - 4) + '" y1="' + (base - 6) + '" x2="' + (x - 4) + '" y2="' + (j + 4) + '" stroke="var(--fur-light)" stroke-width="7" stroke-linecap="round"/>' +
+        '<path d="M' + (x - 9) + ' ' + (j + 2) + ' q9 -5 18 0" stroke="#45331f" stroke-width="2" fill="none"/>' +
+        '<g class="seg d" style="transform-origin:' + x + 'px ' + j + 'px">' +
+          '<line x1="' + x + '" y1="' + j + '" x2="' + x + '" y2="' + tip + '" stroke="var(--fur)" stroke-width="21" stroke-linecap="round"/>' +
+          '<line x1="' + (x - 3) + '" y1="' + (j - 4) + '" x2="' + (x - 3) + '" y2="' + (tip + 4) + '" stroke="var(--fur-light)" stroke-width="6" stroke-linecap="round"/>' +
+          '<path d="M' + (x - 7) + ' ' + (tip - 2) + ' Q' + x + ' ' + (tip - 20) + ' ' + (x + 7) + ' ' + (tip - 2) + ' Z" fill="var(--claw)"/>' +
+        '</g>' +
+      '</g></g>';
+  }
+  var pawSvg = '<svg viewBox="0 0 240 320" aria-hidden="true">' +
+    '<path d="M70 300 L170 300 L176 320 L64 320 Z" fill="#3b2a1b"/>' +
+    '<path d="M52 176 Q40 128 70 118 L172 118 Q200 128 190 180 Q186 250 162 300 L78 300 Q56 250 52 176 Z" fill="var(--fur)"/>' +
+    '<path d="M78 150 Q110 170 160 150 M84 214 Q120 232 158 210 M96 262 Q120 272 146 260" stroke="#45331f" stroke-width="2.2" fill="none" opacity=".7"/>' +
+    '<g transform="rotate(-38 58 186)"><line x1="58" y1="186" x2="58" y2="128" stroke="var(--fur)" stroke-width="24" stroke-linecap="round"/>' +
+      '<path d="M51 124 Q58 106 65 124 Z" fill="var(--claw)"/></g>' +
+    finger(0, 88, 128, 50, 40) + finger(1, 122, 122, 56, 44) + finger(2, 156, 128, 50, 40) +
+    '</svg>';
+
   document.body.insertAdjacentHTML("afterbegin", `
 <div class="wrap">
   <header>
-    <div class="brand">🐒 <span data-t="title"></span><small data-t="tag"></small></div>
-    <span class="pill" id="status"></span>
+    <div class="brand" data-t="title"></div>
+    <div class="status" id="status" role="status"></div>
   </header>
-
-  <div class="hero">
-    <div class="paw" id="paw">
-      <svg viewBox="0 0 200 250" aria-hidden="true">
-        <g class="finger" data-i="0"><rect x="42" y="30" width="34" height="110" rx="17"/><ellipse class="nail" cx="59" cy="38" rx="9" ry="7"/></g>
-        <g class="finger" data-i="1"><rect x="83" y="12" width="34" height="128" rx="17"/><ellipse class="nail" cx="100" cy="20" rx="9" ry="7"/></g>
-        <g class="finger" data-i="2"><rect x="124" y="30" width="34" height="110" rx="17"/><ellipse class="nail" cx="141" cy="38" rx="9" ry="7"/></g>
-        <path d="M30 130 Q 26 210 70 236 L 130 236 Q 176 210 172 130 Z" fill="#5a3d2a"/>
-        <path d="M30 150 Q 4 140 8 112 Q 14 100 26 112 L 40 140 Z" fill="#5a3d2a"/>
-        <path d="M60 236 L 140 236 L 136 250 L 64 250 Z" fill="#3b281c"/>
-      </svg>
-    </div>
+  <div class="cabinet">
+    <div class="paw still" id="paw">` + pawSvg + `</div>
     <div>
-      <div class="label" data-t="yourWish"></div>
-      <div class="wish empty" id="wish"></div>
-      <div class="dots" id="dots"></div>
-      <div class="hint" id="hint"></div>
+      <div class="tag">
+        <p class="wish empty" id="wish"></p>
+        <div class="left" id="left"></div>
+      </div>
+      <p class="next" id="next"></p>
+      <ul class="conds" id="conds"></ul>
     </div>
   </div>
-
-  <section>
-    <h2 data-t="conditions"></h2>
-    <div class="chips" id="conds"></div>
+  <section id="ledgerSec" hidden>
+    <h2 data-t="ledger"></h2>
+    <ol class="ledger" id="ledger"></ol>
   </section>
-
-  <section>
-    <h2 data-t="rounds"></h2>
-    <div class="rounds" id="rounds"></div>
-  </section>
-
-  <section id="contractSec" hidden>
+  <section id="deedSec" hidden>
     <h2 data-t="contract"></h2>
-    <div class="contract" id="contract"></div>
+    <div class="deed" id="deed"></div>
     <div class="actions">
       <button id="copyBtn" data-t="copy"></button>
       <button id="saveBtn" data-t="save"></button>
     </div>
   </section>
-
   <footer data-t="footer"></footer>
-</div>
-
-`);
+</div>`);
 
   var T = {
     ko: {
-      title: "원숭이 손", tag: "소원은 이루어진다. 글자 그대로.", yourWish: "당신의 소원",
-      noWish: "Claude 채팅에 소원을 말하세요", conditions: "덧붙인 조건", noConds: "아직 없음",
-      rounds: "소원 기록", contract: "소원 계약서", copy: "계약서 복사", save: "결과 HTML 저장",
-      copied: "복사했습니다", footer: "이 화면은 표시판입니다. 입력은 Claude 채팅에서 합니다.",
-      hintPlay: "조건을 덧붙여 <b>Claude 채팅</b>에 다시 빌어라.", hintLast: "마지막 기회. <b>Claude 채팅</b>에 최종 수정을 한 번만.",
-      hintWait: "<b>Claude 채팅</b>에 소원을 말하세요.", hintEnd: "게임 끝. 아래 계약서를 확인하세요.",
-      live: "실시간", off: "연결 끊김 · 새로고침", ended: "종료", round: "라운드",
-      granted: "소원 성취", loophole: "빈틈", final: "최종 수정. 손가락이 남지 않아 계약서로 넘어갑니다.", defeat: "원숭이 손이 떨린다... 그러나 접히지 않는다.",
-      cWish: "소원", cConds: "조건", cClosed: "막아낸 빈틈", cOpen: "남은 빈틈", none: "없음", sub: "이 계약서는 이제 요구사항 명세서입니다",
+      title: "원숭이 손", ledger: "소원 기록", contract: "소원 계약서", copy: "계약서 복사", save: "HTML로 저장",
+      copied: "복사했습니다", footer: "이 화면은 게임 진행을 보여 줍니다. 소원과 조건은 Claude 채팅에 입력하세요.",
+      noWish: "아직 소원이 없습니다", left: function (n) { return "남은 소원 <b>" + n + "번</b>"; },
+      nextWait: "<b>Claude 채팅</b>에 소원을 말하세요.", nextPlay: "조건을 덧붙여 <b>Claude 채팅</b>에 다시 빌어 보세요.",
+      nextLast: "손가락이 다 접혔습니다. <b>Claude 채팅</b>에 마지막 수정을 한 번 할 수 있습니다.", nextEnd: "게임이 끝났습니다. 아래 계약서를 확인하세요.",
+      live: "Claude 채팅과 연결됨", off: "연결이 끊겼습니다. 페이지를 새로고침하세요.", ended: "게임 끝",
+      ord: function (n) { return ["첫 번째 소원", "두 번째 소원", "세 번째 소원"][n] || (n + 1) + "번째 소원"; },
+      final: "마지막 수정", gap: "빈틈", finalNote: "남은 손가락이 없어 이 수정으로 계약서를 썼습니다.",
+      defeat: "손이 떨리기만 하고 손가락이 접히지 않았습니다. 빈틈이 없는 소원입니다.",
+      sub: "이번 게임에서 찾은 빈틈을 반영한 요구사항입니다.", cConds: "조건", cClosed: "막아낸 빈틈", cOpen: "남은 빈틈", none: "없음",
       v: { paw_defeated: "원숭이 손 패배", draw: "무승부", paw_wins: "원숭이 손 승리" }
     },
     en: {
-      title: "Monkey's Paw", tag: "Wishes come true. Word for word.", yourWish: "Your wish",
-      noWish: "Make a wish in the Claude chat", conditions: "Conditions", noConds: "None yet",
-      rounds: "Wish log", contract: "Wish Contract", copy: "Copy contract", save: "Save as HTML",
-      copied: "Copied", footer: "This page is a scoreboard. You play in the Claude chat.",
-      hintPlay: "Add conditions and wish again in the <b>Claude chat</b>.", hintLast: "Last chance: one final amendment in the <b>Claude chat</b>.",
-      hintWait: "Make a wish in the <b>Claude chat</b>.", hintEnd: "Game over. See the contract below.",
-      live: "live", off: "disconnected · refresh", ended: "ended", round: "Round",
-      granted: "Granted", loophole: "Loophole", final: "Final amendment. No fingers left, on to the contract.", defeat: "The paw trembles... and cannot curl.",
-      cWish: "Wish", cConds: "Conditions", cClosed: "Loopholes closed", cOpen: "Still open", none: "none", sub: "This contract is now a requirements spec",
+      title: "Monkey's Paw", ledger: "Wish log", contract: "Wish contract", copy: "Copy contract", save: "Save as HTML",
+      copied: "Copied", footer: "This page shows the game. Type wishes and conditions in the Claude chat.",
+      noWish: "No wish yet", left: function (n) { return "Wishes left: <b>" + n + "</b>"; },
+      nextWait: "Make a wish in the <b>Claude chat</b>.", nextPlay: "Add conditions and wish again in the <b>Claude chat</b>.",
+      nextLast: "All fingers are curled. You get one final amendment in the <b>Claude chat</b>.", nextEnd: "Game over. Read the contract below.",
+      live: "Connected to the Claude chat", off: "Connection lost. Refresh the page.", ended: "Game over",
+      ord: function (n) { return ["First wish", "Second wish", "Third wish"][n] || "Wish " + (n + 1); },
+      final: "Final amendment", gap: "Loophole", finalNote: "No fingers left, so this amendment went into the contract.",
+      defeat: "The paw trembled, but no finger curled. This wish has no loophole.",
+      sub: "Requirements, with the loopholes found in this game patched.", cConds: "Conditions", cClosed: "Loopholes closed", cOpen: "Still open", none: "None",
       v: { paw_defeated: "Paw defeated", draw: "Draw", paw_wins: "Paw wins" }
     }
   };
@@ -180,13 +199,13 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: cen
     if (text != null) e.textContent = String(text);
     return e;
   }
-  // 사용자 문자열은 textContent로만 넣는다. 강조할 인용구만 <mark>로 감싼다.
+  // 사용자 문자열은 textContent로만 넣는다. 빈틈 단어만 <em>으로 감싸 밑줄을 긋는다.
   function withMark(parent, text, quote) {
     text = String(text || "");
     var i = quote ? text.indexOf(quote) : -1;
     if (i < 0) { parent.appendChild(document.createTextNode(text)); return parent; }
     parent.appendChild(document.createTextNode(text.slice(0, i)));
-    parent.appendChild(el("mark", null, quote));
+    parent.appendChild(el("em", null, quote));
     parent.appendChild(document.createTextNode(text.slice(i + quote.length)));
     return parent;
   }
@@ -194,84 +213,92 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: cen
     document.querySelectorAll("[data-t]").forEach(function (n) { n.textContent = L[n.getAttribute("data-t")]; });
     document.documentElement.lang = L === T.en ? "en" : "ko";
   }
+  function setFingers(curled) {
+    document.querySelectorAll(".finger").forEach(function (f, i) {
+      var c = i < curled;
+      f.querySelector(".p").style.transform = c ? "scaleY(.5)" : "";
+      f.querySelector(".d").style.transform = c ? "rotate(" + (i === 0 ? -180 : 180) + "deg)" : "";
+    });
+  }
 
   function render(s) {
     var fresh = s.rounds.length > lastRounds;
     var ended = s.status === "ended";
+    var curled = Math.min(3, s.curled || 0);
     L = T[s.lang] || T.ko;
     labels();
 
     var w = $("wish");
     w.textContent = s.wish || L.noWish;
     w.classList.toggle("empty", !s.wish);
-
-    var curled = Math.min(3, s.curled || 0);
-    document.querySelectorAll(".finger").forEach(function (f, i) { f.classList.toggle("curled", i < curled); });
-    $("dots").textContent = "●●●".slice(0, 3 - curled) + "○○○".slice(0, curled);
-    if (fresh) { var p = $("paw"); p.classList.remove("shake"); void p.offsetWidth; p.classList.add("shake"); }
-
-    $("hint").innerHTML = ended ? L.hintEnd : !s.wish ? L.hintWait : curled >= 3 ? L.hintLast : L.hintPlay;
+    $("left").innerHTML = L.left(3 - curled);
+    setFingers(curled);
+    if (fresh && lastRev > 0) { var p = $("paw"); p.classList.remove("twitch"); void p.offsetWidth; p.classList.add("twitch"); }
+    $("next").innerHTML = ended ? L.nextEnd : !s.wish ? L.nextWait : curled >= 3 ? L.nextLast : L.nextPlay;
 
     var c = $("conds"); c.textContent = "";
-    if (!s.conditions || !s.conditions.length) c.appendChild(el("span", "none", L.noConds));
-    (s.conditions || []).forEach(function (t, i) {
-      var chip = el("span", "chip"); chip.appendChild(el("i", null, i + 1)); chip.appendChild(document.createTextNode(t)); c.appendChild(chip);
-    });
+    (s.conditions || []).forEach(function (t) { c.appendChild(el("li", null, t)); });
 
-    var r = $("rounds"); r.textContent = "";
-    s.rounds.slice().reverse().forEach(function (rd, idx) {
-      var n = s.rounds.length - idx;
-      var card = el("div", "round" + (fresh && idx === 0 ? " fresh" : ""));
-      card.appendChild(el("span", "no", L.round + " " + n));
-      card.appendChild(el("div", "ask", rd.input));
-      if (rd.defeat) { card.appendChild(el("div", "defeat", "🐒 " + L.defeat)); r.appendChild(card); return; }
-      if (!rd.granted) { card.appendChild(el("div", "final", "📜 " + L.final)); r.appendChild(card); return; }
-      var g = el("div", "granted"); g.appendChild(el("b", null, L.granted + " · ")); withMark(g, rd.granted, ""); card.appendChild(g);
-      var lp = el("div", "loop"); lp.appendChild(el("b", null, L.loophole + " · ")); withMark(lp, rd.loophole, rd.quote); card.appendChild(lp);
-      r.appendChild(card);
-    });
-
-    var sec = $("contractSec");
-    sec.hidden = !s.contract;
-    if (s.contract) {
-      var k = s.contract, box = $("contract");
-      box.textContent = "";
-      box.className = "contract" + (ended && !lastEnded ? " fresh" : "");
-      box.appendChild(el("div", "stamp", L.v[k.verdict] || k.verdict));
-      box.appendChild(el("h3", null, "📜 " + L.contract));
-      box.appendChild(el("div", "sub", L.sub));
-      function row(title, items, ordered) {
-        var d = el("div", "row"); d.appendChild(el("b", null, title));
-        if (typeof items === "string") { d.appendChild(el("div", null, items)); }
-        else if (!items || !items.length) { d.appendChild(el("div", null, L.none)); }
-        else { var list = el(ordered ? "ol" : "ul"); items.forEach(function (t) { list.appendChild(el("li", null, t)); }); d.appendChild(list); }
-        box.appendChild(d);
+    var lg = $("ledger"); lg.textContent = "";
+    $("ledgerSec").hidden = !s.rounds.length;
+    var newest = null;
+    s.rounds.forEach(function (rd, n) {
+      var li = el("li", "entry" + (fresh && n === s.rounds.length - 1 && lastRev > 0 ? " new" : ""));
+      var isFinal = !rd.defeat && !rd.granted;
+      li.appendChild(el("div", "ord", isFinal ? L.final : L.ord(n)));
+      var body = el("div");
+      body.appendChild(el("p", "said", rd.input));
+      if (rd.defeat) body.appendChild(el("p", "quiet", L.defeat));
+      else if (isFinal) body.appendChild(el("p", "quiet", L.finalNote));
+      else {
+        body.appendChild(el("p", "granted", rd.granted));
+        var g = el("p", "gap"); g.appendChild(el("span", null, L.gap)); withMark(g, rd.loophole, rd.quote); body.appendChild(g);
       }
-      row(L.cWish, k.wish);
-      row(L.cConds, k.conditions, true);
-      row(L.cClosed, k.closed);
-      row(L.cOpen, k.open);
-      if (k.note) box.appendChild(el("div", "note", k.note));
+      li.appendChild(body);
+      lg.appendChild(li);
+      newest = li;
+    });
+
+    $("deedSec").hidden = !s.contract;
+    if (s.contract) {
+      var k = s.contract, d = $("deed");
+      d.textContent = "";
+      d.className = "deed has-seal" + (ended && !lastEnded && lastRev > 0 ? " new" : "");
+      d.appendChild(el("div", "seal", L.v[k.verdict] || k.verdict));
+      d.appendChild(el("h3", null, L.contract));
+      d.appendChild(el("p", "sub", L.sub));
+      d.appendChild(el("p", "wish", k.wish));
+      function block(title, items, ordered) {
+        d.appendChild(el("h4", null, title));
+        if (!items || !items.length) { d.appendChild(el("p", "none", L.none)); return; }
+        var list = el(ordered ? "ol" : "ul"); items.forEach(function (t) { list.appendChild(el("li", null, t)); }); d.appendChild(list);
+      }
+      block(L.cConds, k.conditions, true);
+      block(L.cClosed, k.closed);
+      block(L.cOpen, k.open);
+      if (k.note) d.appendChild(el("p", "note", k.note));
     }
 
-    var st = $("status");
-    st.className = "pill" + (ended ? "" : " live");
-    st.textContent = ended ? L.ended : L.live;
+    var st = $("status"); st.className = "status"; st.textContent = ended ? L.ended : L.live;
+    if (lastRev > 0 && fresh) {
+      var target = ended && !lastEnded ? $("deedSec") : newest;
+      if (target) setTimeout(function () { target.scrollIntoView({ behavior: "smooth", block: "start" }); }, 900);
+    }
     lastRounds = s.rounds.length; lastEnded = ended;
   }
 
   function contractText() {
     var k = state && state.contract; if (!k) return "";
-    var out = ["📜 " + L.contract, "", L.cWish + ": " + k.wish, "", L.cConds + ":"];
+    var out = [L.contract, "", k.wish, "", L.cConds + ":"];
     (k.conditions || []).forEach(function (t, i) { out.push((i + 1) + ". " + t); });
     out.push("", L.cClosed + ": " + ((k.closed || []).join(", ") || L.none));
     out.push(L.cOpen + ": " + ((k.open || []).join(", ") || L.none));
-    out.push("", (L.v[k.verdict] || k.verdict) + " · " + $("dots").textContent);
+    out.push("", L.v[k.verdict] || k.verdict);
     return out.join("\n");
   }
   $("copyBtn").onclick = function () {
     var b = this, txt = contractText();
-    var done = function () { var o = L.copy; b.textContent = L.copied; setTimeout(function () { b.textContent = o; }, 1500); };
+    var done = function () { b.textContent = L.copied; setTimeout(function () { b.textContent = L.copy; }, 1500); };
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () { prompt("", txt); });
     else prompt("", txt);
   };
@@ -279,7 +306,7 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: cen
   $("saveBtn").onclick = function () {
     var doc = document.documentElement.cloneNode(true);
     doc.querySelectorAll("script, .actions, #status").forEach(function (n) { n.remove(); });
-    doc.querySelectorAll(".fresh").forEach(function (n) { n.classList.remove("fresh"); });
+    doc.querySelectorAll(".new").forEach(function (n) { n.classList.remove("new"); });
     var blob = new Blob(["<!doctype html>\n" + doc.outerHTML], { type: "text/html" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -295,22 +322,24 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: cen
       s.remove();
       var ns = window.PAW_STATE;
       if (ns && Array.isArray(ns.rounds) && ns.revision > lastRev) {
-        lastRev = ns.revision; state = ns;
         try { render(ns); } catch (e) { console.error(e); }
+        // 처음 그릴 때는 손가락을 애니메이션 없이 현재 상태로 둔다.
+        if (lastRev < 0) setTimeout(function () { $("paw").classList.remove("still"); }, 50);
+        lastRev = ns.revision; state = ns;
       }
-      if (state && state.status !== "ended") $("status").className = "pill live";
+      if (state && state.status !== "ended") { var st = $("status"); st.className = "status"; st.textContent = L.live; }
       setTimeout(poll, 1500);
     };
     s.onerror = function () {
       s.remove();
-      var st = $("status"); st.className = "pill off"; st.textContent = L.off;
+      var st = $("status"); st.className = "status off"; st.textContent = L.off;
       setTimeout(poll, 3000);
     };
     document.head.appendChild(s);
   }
   labels();
   $("wish").textContent = L.noWish;
-  $("hint").innerHTML = L.hintWait;
-  $("conds").appendChild(el("span", "none", L.noConds));
+  $("left").innerHTML = L.left(3);
+  $("next").innerHTML = L.nextWait;
   poll();
 })();
